@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Helper\Helpers;
+
+//use App\Helper\Helpers;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,12 +16,16 @@ use App\Helper\Helpers;
 |
 */
 
-Route::get('/', function () {
-    //return view('welcome');
-    list($url, $token) = Helpers::authorize();
+Route::get('/login', function () {
+    return view('welcome');
+    // list($url, $token) = Helpers::authorize();
     
-    //dd($token, $url);
-    //Helpers::GetCalendarsList($token);
-    Helpers::getAllEvents($token, 'anuragsingh22324@gmail.com');
-    //Helpers::createNewCalendar($token, 'My second new calendar', 'Blues Clues 2');
+    // //dd($token, $url);
+    // //Helpers::GetCalendarsList($token);
+    // Helpers::getAllEvents($token, 'anuragsingh22324@gmail.com');
+    // //Helpers::createNewCalendar($token, 'My second new calendar', 'Blues Clues 2');
 });
+
+Auth::routes(['register' => false]);
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

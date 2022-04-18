@@ -165,6 +165,10 @@ class Helpers {
         if($http_code != 200) 
             throw new Exception('Error : Failed to create calendar');
         dd($data); 
+    }    
+
+    public static function callApi($access_token, $url)
+    {
+        $api_url = $url;           
     }
 }
-
