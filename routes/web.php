@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+
 //use App\Helper\Helpers;
 
 /*
@@ -24,6 +25,13 @@ Route::get('/login', function () {
     // //Helpers::GetCalendarsList($token);
     // Helpers::getAllEvents($token, 'anuragsingh22324@gmail.com');
     // //Helpers::createNewCalendar($token, 'My second new calendar', 'Blues Clues 2');
+});
+
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('google')
+        ->scopes(['https://www.googleapis.com/auth/calendar.events'])
+        ->with(['access_type' => 'offline'])
+        ->redirect();
 });
 
 Auth::routes(['register' => false]);

@@ -68,6 +68,11 @@
                 </div>
             </div>
         </div>
+        <div style="margin-left: 75%; margin-top: 50px">
+            <p class="lead">
+              <a class="btn btn-primary btn-lg" href="/auth/redirect" role="button">Login via Google</a>
+            </p>
+          </div>
     </div>
 </div>
 @endsection
