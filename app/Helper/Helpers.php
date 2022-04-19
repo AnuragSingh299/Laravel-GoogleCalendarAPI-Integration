@@ -4,8 +4,20 @@ namespace App\Helper;
 
 use Exception;
 use Illuminate\Support\Facades\Config;
-
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
 class Helpers {
+    public static function checkUserExists($userMail)
+    {
+        $user = User::where('email', $userMail)->first();
+        if ($user) 
+        {
+            return $user->exists();
+        }
+        else
+            return false;
+    }
+
     public static function authorize()
     {
         $end_point = 'https://accounts.google.com/o/oauth2/v2/auth';

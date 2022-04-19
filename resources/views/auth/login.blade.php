@@ -73,6 +73,11 @@
               <a class="btn btn-primary btn-lg" href="/auth/redirect" role="button">Login via Google</a>
             </p>
           </div>
+          @if (session('message'))
+            <div class="alert alert-danger">
+                {{ session('message') }}
+            </div>
+@endif
     </div>
 </div>
 @endsection
