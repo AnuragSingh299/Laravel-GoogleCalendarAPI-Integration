@@ -6,7 +6,32 @@ use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+
 class Helpers {
+
+    public static function generateAccessToken($refresh_token)
+    {
+        $token_url = "https://oauth2.googleapis.com/token";
+        $request_data = array(
+            "client_id" => config('services.google.client_id'),
+            "client_secret" => config('services.google.client_secret'),
+            "refresh_token" => $refresh_token,
+            "grant_type" => "refresh_token"
+        );
+        $ch = curl_init($token_url);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($request_data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/x-www-form-urlencoded"
+        )); 
+
+        $result = curl_exec($ch);
+        dd($result);
+    }
+
+
     public static function checkUserExists($userMail)
     {
         $user = User::where('email', $userMail)->first();
@@ -130,6 +155,7 @@ class Helpers {
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '. $access_token));	
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);	
         $data = json_decode(curl_exec($ch), true);
+        dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to get calendars list');
@@ -179,8 +205,9 @@ class Helpers {
         dd($data); 
     }    
 
-    public static function callApi($access_token, $url)
-    {
-        $api_url = $url;           
-    }
+    // public static function checkTokenExpired($id, $email)
+    // {
+    //     DB::table('google_users')
+    //             ->select('')
+    // }
 }

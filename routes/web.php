@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use App\Helper\Helpers;
+use Illuminate\Support\Facades\DB;
+
 //use App\Helper\Helpers;
 
 /*
@@ -21,55 +23,64 @@ use App\Helper\Helpers;
 |
 */
 
-Route::get('/login', function () {
-    return view('welcome');
-    // list($url, $token) = Helpers::authorize();
-    
-    // //dd($token, $url);
-    // //Helpers::GetCalendarsList($token);
-    // Helpers::getAllEvents($token, 'anuragsingh22324@gmail.com');
-    // //Helpers::createNewCalendar($token, 'My second new calendar', 'Blues Clues 2');
+Route::get('/', function() {
+    return redirect()->route('login');
 });
 
 Route::get('/auth/redirect', function () {
     return Socialite::driver('google')
-        ->scopes(['https://www.googleapis.com/auth/calendar.events'])
-        ->with(['access_type' => 'offline'])
+        ->with(['access_type' => 'offline', "prompt" => "consent select_account"])
         ->redirect();
 });
 
+Route::get('/auth/redirect/calendar', function () {
+    return Socialite::driver('google')
+        ->scopes(['https://www.googleapis.com/auth/calendar'])
+        ->with(['access_type' => 'offline'])
+        ->redirect();
+})->name('calendar');
+
 Route::get('/auth/callback', function () {
-    $social_user = Socialite::driver('google')->user();
-    $userExists = Helpers::checkUserExists($social_user->email);
-    if(!$userExists)
+    $social_user = Socialite::driver('google')->user(); 
+    $google_client_token = [
+        'access_token' => $social_user->token,
+        'refresh_token' => $social_user->refreshToken,
+        'expires_in' => $social_user->expiresIn
+    ];
+    $scope = 'https://www.googleapis.com/auth/calendar';
+    // $userExists = Helpers::checkUserExists($social_user->email);
+    // if(!$userExists)
+    // {
+    //     return redirect('/login')->with(['message' => 'User does not exist']);
+    // }
+    //dd($social_user);
+    //dd($social_user->approvedScopes);
+    if(in_array($scope,$social_user->approvedScopes)) 
     {
-        return redirect('/login')->with(['message' => 'User does not exist']);
+        // $no_of_users = DB::table('google_users')
+        //         ->where('email', $social_user->email)
+        //         ->where('user_id', Auth::id())
+        //         ->count();
+        // if($no_of_users < 1)
+        // {
+        //    //check access token is expired or not
+        // }
+        // else
+        // {
+        //     //add data to google_users table
+        // }
+        //Helpers::generateAccessToken($google_client_token['refresh_token']);
+        Helpers::GetCalendarsList($google_client_token['access_token']);
     }
     else
-    {
-        $google_user = GoogleUser::whereGoogleId($social_user->id)->first();
-        $user = ($google_user) ? $google_user->user: new User;
-        //if first time sign in store data in user table
-        if (!$google_user) {
-            $user->name = $social_user->name;
-            $user->email = $social_user->email;
-            $user->password = bcrypt(Str::random(20));
-            $user->save();
-            $google_user = new GoogleUser;
-            $google_user->google_id = $social_user->id;
-        }
-        //dd($user->id);
-        //$google_user->user_id = $user->id;
-        //$google_user->email = $social_user->email;
-        //after sign in update following in the google user table
-        $google_user->access_token = $social_user->token;
-        $google_user->refresh_token = $social_user->refreshToken ?? $google_user->refreshToken;
-        $google_user->expires = Carbon::now()->timestamp + $social_user->expiresIn;
-        $user->googleUser()->save($google_user);
-        Auth::login($user);
-        return redirect('/todo');
+    { 
+        return view('calendars.home');
     }
-   // dd($social_user);
+    
+    //Helpers::GetCalendarsList($google_client_token['access_token']);
+    //dd();
+    
+    //dd($google_client_token);
     
 });
 

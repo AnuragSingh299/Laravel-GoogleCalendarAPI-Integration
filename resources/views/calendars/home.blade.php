@@ -16,6 +16,7 @@
 
                     {{ __('You are logged in!') }}
                     <a href="/auth/redirect/calendar">Your Calendar List</a>
+
                 </div>
             </div>
         </div>
