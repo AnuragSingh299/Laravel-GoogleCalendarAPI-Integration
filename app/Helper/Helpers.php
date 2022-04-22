@@ -6,8 +6,51 @@ use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use DateTimeZone;
+use Illuminate\Support\Carbon;
+use PhpParser\Node\Expr\FuncCall;
 
 class Helpers {
+
+    public static function createGoogleUser()
+    {
+
+    }
+
+    public static function storeNewAccessToken($userId, $newExpiryAt, $newAccesToken)
+    {
+        DB::table('google_users')
+                ->where('user_id', $userId)
+                ->update(array('expiry_at' => $newExpiryAt, "access_token" => $newAccesToken));
+    }
+
+    public static function getUserAccessToken($userId)
+    {   
+        $accessToken = DB::table('google_users')
+                            ->select('access_token')
+                            ->where('user_id', $userId)
+                            ->value('access_token');
+        return $accessToken;
+    }
+
+    public static function getUserRefreshToken($userId)
+    {   
+        $refreshToken = DB::table('google_users')
+                            ->select('refresh_token')
+                            ->where('user_id', $userId)
+                            ->value('refresh_token');
+        return $refreshToken;
+    }
+
+    public static function getUserAccessTokenExpiry($userId)
+    {   
+        $expiryAt = DB::table('google_users')
+                            ->select('expiry_at')
+                            ->where('user_id', $userId)
+                            ->value('expiry_at');
+        return $expiryAt;
+
+    }
 
     public static function generateAccessToken($refresh_token)
     {
@@ -28,9 +71,15 @@ class Helpers {
         )); 
 
         $result = curl_exec($ch);
-        dd($result);
+        return json_decode($result)->access_token;
     }
 
+    public static function isTokenExpired($expiryTime)
+    {
+        $expiryTime = Carbon::parse($expiryTime)->setTimezone('Asia/Kolkata')->subRealHours(5.5);
+        $currentTime = Carbon::now(new DateTimeZone('Asia/Kolkata'));
+        return $currentTime->gt($expiryTime);
+    }
 
     public static function checkUserExists($userMail)
     {
@@ -43,103 +92,6 @@ class Helpers {
             return false;
     }
 
-    public static function authorize()
-    {
-        $end_point = 'https://accounts.google.com/o/oauth2/v2/auth';
-        $client_id = config('services.google.client_id');
-        $client_secret = config('services.google.client_secret');
-        $redirect_uri = 'http://127.0.0.1:8000/';
-        $scope = 'https://www.googleapis.com/auth/calendar';
-
-
-        $authUrl = $end_point.'?'.http_build_query([
-            'client_id'              => $client_id,
-            'redirect_uri'           => $redirect_uri,              
-            'scope'                  => $scope,
-            'access_type'            => 'offline',
-            'include_granted_scopes' => 'true',
-            'state'                  => 'state_parameter_passthrough_value',
-            'response_type'          => 'code',
-        ]);
-
-        echo '<a href = "'.$authUrl.'">Authorize</a></br>';
-
-        //dd($authUrl);
-        // Generate new Access Token and Refresh Token if token.json doesn't exist
-        if ( !file_exists('token.json') ){
-            
-            if ( isset($_GET['code'])){
-                $code = $_GET['code'];         // Visit $authUrl and get the authentication code
-            }else{
-                return;
-            } 
-            //dd($code);
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL,"https://accounts.google.com/o/oauth2/token");
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/x-www-form-urlencoded']);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-                'code'          => $code,
-                'client_id'     => $client_id,
-                'client_secret' => $client_secret,
-                'redirect_uri'  => $redirect_uri,
-                'grant_type'    => 'authorization_code',
-            ]));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $response = curl_exec($ch);
-            curl_close ($ch);
-            
-            file_put_contents('token.json', $response);
-            $response = file_get_contents('token.json');
-            $array = json_decode($response);
-            $access_token = $array->access_token;
-            return array($authUrl, $access_token);
-        }
-        else{
-            $response = file_get_contents('token.json');
-            $array = json_decode($response);
-            //dd($response);
-            $access_token = $array->access_token;
-            $refresh_token = $array->refresh_token;
-            return array($authUrl, $access_token);
-            // Check if the access token already expired
-            $ch = curl_init(); 
-            curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token='.$access_token); 
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $error_response = curl_exec($ch);
-            $array = json_decode($error_response);
-            
-
-            if( isset($array->error)){
-                
-                // Generate new Access Token using old Refresh Token
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL,"https://accounts.google.com/o/oauth2/token");
-                curl_setopt($ch, CURLOPT_POST, TRUE);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-                    'client_id'     => $client_id,
-                    'client_secret' => $client_secret,
-                    'refresh_token'  => $refresh_token,
-                    'grant_type'    => 'refresh_token',
-                ]));
-                
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                $response = curl_exec($ch);
-                curl_close ($ch);
-                file_put_contents('token.json', $response);
-                $response = file_get_contents('token.json');
-                $array = json_decode($response);
-                $access_token = $array->access_token;
-                return array($authUrl, $access_token);
-            }  
-        }
-
-    }
-
-    
     public static function GetCalendarsList($access_token) 
     {
         $url_parameters = array();
@@ -178,7 +130,7 @@ class Helpers {
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '. $access_token));	
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);	
         $data = json_decode(curl_exec($ch), true);
-        //dd($data);
+        dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to get events list');
@@ -204,10 +156,4 @@ class Helpers {
             throw new Exception('Error : Failed to create calendar');
         dd($data); 
     }    
-
-    // public static function checkTokenExpired($id, $email)
-    // {
-    //     DB::table('google_users')
-    //             ->select('')
-    // }
 }
