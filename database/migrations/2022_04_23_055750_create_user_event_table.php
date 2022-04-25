@@ -13,17 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('google_users', function (Blueprint $table) {
+        Schema::create('user_event', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('google_id')->unique();
-            $table->uuid('user_id')
-                ->constrained('users')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->string('email')->unique();
-            $table->string('access_token', 1024);
-            $table->string('refresh_token', 1024);
-            $table->integer('expires');//string('')
+            $table->uuid('user_id');
+            $table->uuid('event_id');
+            $table->foreign('user_id')->on('users')->references('id');
+            $table->foreign('event_id')->on('events')->references('id');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -36,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('google_users');
+        Schema::dropIfExists('user_event');
     }
 };

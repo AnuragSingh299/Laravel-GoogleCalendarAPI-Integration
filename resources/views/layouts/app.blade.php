@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Calendar Inc.</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -18,14 +18,42 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <style>
+        table.home-events-table th{
+            border: 1px solid black;
+        }
+        a:hover.blade-link {
+            background-color: black;
+            color: white;
+            font-size: 20px;
+        }
+        a.blade-link {
+        background-color: white;
+            color: black;
+            font-size: 20px;
+            border:none; 
+            border-radius:5px; 
+            padding:15px;
+            min-height:30px; 
+            min-width: 120px;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="#">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
+                @if (Auth::check())
+                    <a href="{{ route('home') }}"  class="nav-link">Home</a>
+                    <a href="{{ route('calendar.index') }}"  class="nav-link">Calendars</a>
+                    <a href="{{ route('event.index') }}"  class="nav-link">Events</a>    
+                    <a href="auth/redirect/calendar"><img src="https://logos-world.net/wp-content/uploads/2021/03/Google-Calendar-Logo-700x394.png" style="width:40px;height:20px" alt="Sync Google Calendar" title="Sync Google Calendar"></a>
+                @else
+                    <a class="navbar-brand" href="{{ url('/') }}">
+                        {{ config('app.name', 'Calendar') }}
+                    </a>     
+                @endif
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>

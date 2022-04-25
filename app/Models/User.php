@@ -48,4 +48,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(GoogleUser::class);
     }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'user_event');
+    }
 }
