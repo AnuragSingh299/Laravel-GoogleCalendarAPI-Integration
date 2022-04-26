@@ -90,7 +90,7 @@ Route::get('/auth/callback', function () {
             else
             {
                 $oldAccessToken = Helpers::getUserAccessToken(Auth::id());    
-                Helpers::getAllEvents($oldAccessToken, "anuragsingh22324@gmail.com");//controller here  
+                //Helpers::getAllEvents($oldAccessToken, "anuragsingh22324@gmail.com");//controller here  
                 Helpers::refreshDatabase($oldAccessToken, "anuragsingh22324@gmail.com");
                 //Helpers::createNewCalendar($oldAccessToken, "skggjldg", "sdfsdafsdf");   
                 session(['token' => $oldAccessToken]);

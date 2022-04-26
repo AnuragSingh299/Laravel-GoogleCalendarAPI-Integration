@@ -2,11 +2,11 @@
 
 @section('content')
 <div class="container" style="font-family:sans-serif">
-    <a href="{{ route('event.create') }}" class="blade-link" >Add new Event</a>
+    <a href="{{ route('event.create') }}" class="blade-link" >Add new Event</a><br><br>
     <div class="row justify-content-center">
-        <div class="card">
+        <div class="card" style="border: none">
                 <div >
-                   <center><b style="font-size: 30px">Your Events</b></center>
+                   <center><b style="font-size: 20px">Your Events</b></center>
                 </div>
 
                 <div class="card-body">
@@ -15,7 +15,7 @@
                             {{ session('status') }}
                         </div>
                     @endif
-                    <table class="table" style="font-size: 20px">
+                    <table class="table" style="font-size: 15px ; border:none">
                         <tr>
                             <th>Event Name</th>
                             <th>Description</th>
@@ -25,7 +25,7 @@
                     <tbody>
                         @foreach ($events as $event)
                             <tr>
-                                <td>{{ $event->title }}</td>
+                                <td><a href="{{ route('event.show', $event->id) }}">{{ $event->title }}</a></td>
                                 {{-- <td style="white-space: nowrap">{{ $event->dob }}</td> --}}
                                 <td>{{ $event->description }}</td>
                                 <td>{{ $event->event_start }}</td>

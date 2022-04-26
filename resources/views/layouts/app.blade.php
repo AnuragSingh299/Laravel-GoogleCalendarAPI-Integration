@@ -19,24 +19,38 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <style>
+        body {
+            background: white;
+        }
         table.home-events-table th{
-            border: 1px solid black;
+            border: none;
         }
         a:hover.blade-link {
             background-color: black;
             color: white;
-            font-size: 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border:solid 1px; 
+            border-radius:5px; 
         }
         a.blade-link {
         background-color: white;
             color: black;
-            font-size: 20px;
-            border:none; 
+            font-size: 15px;
+            font-weight: bold;
+            border:solid 1px; 
             border-radius:5px; 
             padding:15px;
             min-height:30px; 
             min-width: 120px;
             text-decoration: none;
+        }
+        table {
+            font-family: sans-serif;
+            width: 25%;
+        }
+        td {
+            font-weight: bold;
         }
     </style>
 </head>

@@ -127,7 +127,7 @@ class Helpers {
     {
         $url_parameters = array();
 
-        $url_parameters['fields'] = 'items(id,summary,description, start, end, status)';
+        $url_parameters['fields'] = 'items(id,summary,description, start, end, status, location, attendees, hangoutLink)';
         $url_parameters['minAccessRole'] = 'owner';
 
         $url_calendars = 'https://www.googleapis.com/calendar/v3/calendars/'. $calendar_id.'/events?'. http_build_query($url_parameters);
@@ -137,6 +137,7 @@ class Helpers {
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '. $access_token));	
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);	
         $data = json_decode(curl_exec($ch), true);
+        //dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to get events list');
@@ -167,27 +168,26 @@ class Helpers {
     {
         $url_new_event = "";
         $curlPost = "";
-        if($meetinglink == true)
+        if(strpos($attendees, ',') === false)
         {
-            $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=1';
+            
+        }
+        if($meetinglink == "yes")
+        {
+            $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=1&sendUpdates=all';
             $curlPost = array(
                 "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
                 "end" => array('dateTime' => $eventEnd), "location" => $location,
                 "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
-                "attendees" => array('email' => $attendees)  
+                "attendees" => array(array('email' => $attendees))  
             );
-            dd(up_json_encode($curlPost, JSON_PRETTY_PRINT));
-            
-           // dd(json_encode($curlPost));
         }
         else
         {
             $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=0';
             $curlPost = array(
                 "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
-                "end" => array('dateTime' => $eventEnd), "location" => $location,
-                "attendees" => array('email' => $attendees)
-            
+                "end" => array('dateTime' => $eventEnd), "location" => $location
             );
         }
         //dd($url_new_event);
@@ -205,7 +205,6 @@ class Helpers {
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to create event');
-        dd($data);
     } 
 
     public static function refreshDatabase($accessToken, $calendar_id = NULL)
@@ -214,13 +213,17 @@ class Helpers {
         {
             $events = Helpers::getAllEvents($accessToken, $calendar_id);
             //dd($events);
+            $columns = array('event_start', 'event_end', 'attendees_emails', 'meeting_link');
             $eventData = array();
+            $eventData = array_fill_keys($columns, "");
             foreach ($events['items'] as $event)
             {
                 $eventData['event_id'] = ($event['id'] ?? null);//if field does not exist in json response field, set it to null
-                $eventData['status'] = ($event['status'] ?? null); 
+                $eventData['status'] = ($event['status'] ?? null);
                 $eventData['title'] = ($event['summary'] ?? null);
                 $eventData['description'] = ($event['description'] ?? null);
+                $eventData['location'] = ($event['location'] ?? null);
+                //$eventData['event_start'] = "";
                 //var_dump($eventData['start'] ?? null);
                 if(array_key_exists('start', $event) && array_key_exists('end', $event))
                 {
@@ -235,6 +238,17 @@ class Helpers {
                         $eventData['event_end'] = ($event['end']['dateTime'] ?? null);   
                     }
                 }
+                
+                if(array_key_exists('attendees', $event))
+                {
+                    $noOfAttendees = count($event['attendees']);
+                    for($attendee = 0 ; $attendee < $noOfAttendees; $attendee++)
+                    {
+                        $eventData['attendees_emails'] = $event['attendees'][$attendee]['email'];
+                    }
+                }
+                $eventData['meeting_link'] = ($event['hangoutLink'] ?? null);
+               // dump($eventData);
                 //event_id should be unique in the events table
                 DB::table('events')->upsert([
                     'id' => Str::uuid()->toString(),
@@ -242,10 +256,13 @@ class Helpers {
                     'event_id' => $eventData['event_id'],
                     'title' => $eventData['title'],
                     'description' => $eventData['description'],
-                    'status' => $event['status'],
+                    'status' => $eventData['status'],
+                    'location' => $eventData['location'],
                     'event_start' => $eventData['event_start'],
-                    'event_end' => $eventData['event_end']
-                ],['event_id'], ['title', 'description', 'status', 'event_start', 'event_end']);
+                    'event_end' => $eventData['event_end'],
+                    'attendees_emails' => $eventData['attendees_emails'],
+                    'meeting_link' => $eventData['meeting_link'],
+                ],['event_id'], ['title', 'description', 'status', 'location', 'event_start', 'event_end', 'attendees_emails', 'meeting_link']);
             }
         }    
     }
