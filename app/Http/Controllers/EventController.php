@@ -7,6 +7,7 @@ use App\Models\Event;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
@@ -43,11 +44,26 @@ class EventController extends Controller
     public function store(Request $request)
     {
         //dd($request->input('eventattendee'));
+        // $attendeesArray = array();
+        // if(strpos($request->input('eventattendee'), ',') !== false)
+        // {
+        //     $attendeesArray = explode(",", $request->input('eventattendee'));
+        // }
+        // $attendeesEmails = array();
+        // $totalAttendees = count($attendeesArray);
+        // $attendees = array('attendees');
+        // for($attendeeEmail = 0; $attendeeEmail < $totalAttendees; $attendeeEmail++)
+        // {
+        //     dump(json_encode(array('email' => $attendeesArray[$attendeeEmail])));
+        // }
+        // dd($attendeesEmails);
+
+        //dd(date("c", strtotime($request->input('eventend')).date_default_timezone_set('Asia/Kolkata')));
             Helpers::insertNewEvent(
                 session('token'),
                 $request->input('eventname'), 
-                $request->input('eventdesc'), date("c", strtotime($request->input('eventstart'))),
-                date("c", strtotime($request->input('eventend'))), $request->input('eventlocation'), 
+                $request->input('eventdesc'), date("c", strtotime($request->input('eventstart')) - 60 * 60 * 5.5),
+                date("c", strtotime($request->input('eventend')) - 60 * 60 * 5.5), $request->input('eventlocation'), 
                 $request->input('eventattendee'),
                 $request->input('meetinglink')
             );

@@ -5,9 +5,9 @@
     <a href="{{ route('event.create') }}" class="blade-link" >Add new Event</a><br><br>
     <div class="row justify-content-center">
         <div class="card" style="border: none">
-                <div >
+                {{-- <div >
                    <center><b style="font-size: 20px">Your Events</b></center>
-                </div>
+                </div> --}}
 
                 <div class="card-body">
                     @if (session('status'))

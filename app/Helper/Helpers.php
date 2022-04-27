@@ -168,19 +168,30 @@ class Helpers {
     {
         $url_new_event = "";
         $curlPost = "";
-        if(strpos($attendees, ',') === false)
-        {
-            
-        }
+        $attendeesArray = array();
         if($meetinglink == "yes")
         {
             $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=1&sendUpdates=all';
-            $curlPost = array(
-                "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
-                "end" => array('dateTime' => $eventEnd), "location" => $location,
-                "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
-                "attendees" => array(array('email' => $attendees))  
-            );
+            if(strpos($attendees, ',') !== false)
+            {
+                $attendeesArray = explode(",", $attendees);
+
+                $curlPost = array(
+                    "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
+                    "end" => array('dateTime' => $eventEnd), "location" => $location,
+                    "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
+                    "attendees" => array(array('email' => $attendees))  
+                );
+            }
+            else
+            {
+                $curlPost = array(
+                    "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
+                    "end" => array('dateTime' => $eventEnd), "location" => $location,
+                    "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
+                    "attendees" => array(array('email' => $attendees))  
+                );
+            }
         }
         else
         {
@@ -201,7 +212,7 @@ class Helpers {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curlPost));
         //curl_exec($ch);
         $data = json_decode(curl_exec($ch), true);
-        dd($data);
+        //dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to create event');

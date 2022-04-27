@@ -25,7 +25,7 @@
         </tr>
         <tr>
             <td><label for="eventattendee">Add guest Email:<sup>*Separate by commas</sup></label></td>
-            <td><textarea name="eventattendee" class="form-control" style="background: white ; border: solid 1px"" id="" cols="30" rows="10"></textarea></td>
+            <td><input type="text" name="eventattendee" class="form-control" style="background: white ; border: solid 1px"" id="eventattendee"></td>
         </tr>
         <tr>
             <td>

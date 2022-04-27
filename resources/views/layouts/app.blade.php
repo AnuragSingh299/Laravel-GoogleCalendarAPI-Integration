@@ -40,9 +40,9 @@
             font-weight: bold;
             border:solid 1px; 
             border-radius:5px; 
-            padding:15px;
-            min-height:30px; 
-            min-width: 120px;
+            padding:10px;
+            min-height:15px; 
+            min-width: 80px;
             text-decoration: none;
         }
         table {
