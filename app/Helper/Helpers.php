@@ -168,20 +168,26 @@ class Helpers {
     {
         $url_new_event = "";
         $curlPost = "";
-        $attendeesArray = array();
+        //$attendeesArray = array();
+        $emailNew = [];
         if($meetinglink == "yes")
         {
             $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=1&sendUpdates=all';
             if(strpos($attendees, ',') !== false)
             {
-                $attendeesArray = explode(",", $attendees);
-
+                $emails = explode(",", $attendees);
+                
+                foreach ($emails as $key => $emailId) 
+                {
+                    $emailNew[] = ['email'=> $emailId] ;            
+                }
                 $curlPost = array(
                     "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
                     "end" => array('dateTime' => $eventEnd), "location" => $location,
                     "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
-                    "attendees" => array(array('email' => $attendees))  
+                    "attendees" => $emailNew  
                 );
+                //dd(json_encode($curlPost, true, JSON_PRETTY_PRINT));
             }
             else
             {
@@ -202,6 +208,7 @@ class Helpers {
             );
         }
         //dd($url_new_event);
+        //dd($curlPost);
         $ch = curl_init();		
         curl_setopt($ch, CURLOPT_URL, $url_new_event);		
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	
@@ -211,8 +218,8 @@ class Helpers {
         //dd(json_encode($curlPost));
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curlPost));
         //curl_exec($ch);
-        $data = json_decode(curl_exec($ch), true);
-        //dd($data);
+        $data = json_decode(curl_exec($ch), true, JSON_PRETTY_PRINT);
+        dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to create event');

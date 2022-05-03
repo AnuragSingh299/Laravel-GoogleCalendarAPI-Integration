@@ -43,7 +43,15 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request->input('eventattendee'));
+        // $email = $request->input('eventattendee'); 
+        // $email = explode(', ',$email);
+        // $emailNew = [];
+        // foreach ($email as $key => $emailId) 
+        // {
+        //     $emailNew[] = ['email'=> $emailId] ;            
+        //     dump($emailId);
+        // }
+        // dd(json_encode($emailNew, JSON_PRETTY_PRINT));
         // $attendeesArray = array();
         // if(strpos($request->input('eventattendee'), ',') !== false)
         // {
