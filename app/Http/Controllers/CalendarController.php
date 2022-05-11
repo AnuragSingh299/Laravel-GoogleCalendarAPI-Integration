@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Helpers;
 use App\Models\Calendar;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,9 @@ class CalendarController extends Controller
      */
     public function index()
     {
-        return view('calendar.index');
+        $calendars = Calendar::all();
+        //dd($events);
+        return view('calendar.index', compact('calendars'));
     }
 
     /**
@@ -24,7 +27,7 @@ class CalendarController extends Controller
      */
     public function create()
     {
-        //
+        return view('calendar.create');
     }
 
     /**
@@ -35,7 +38,8 @@ class CalendarController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Helpers::createNewCalendar(session('token'), $request->input('calendarname'), $request->input('calendardesc'));
+        return redirect()->route('calendar.index');
     }
 
     /**
@@ -44,9 +48,9 @@ class CalendarController extends Controller
      * @param  \App\Models\Calendar  $calendar
      * @return \Illuminate\Http\Response
      */
-    public function show(Calendar $calendar)
+    public function show($id)
     {
-        //
+        return view('calendar.show', ['calendar' => Calendar::find($id)]);
     }
 
     /**

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container" style="font-family:sans-serif">
     <a href="{{ route('event.create') }}" class="blade-link" >Add new Event</a><br><br>
     <div class="row justify-content-center">

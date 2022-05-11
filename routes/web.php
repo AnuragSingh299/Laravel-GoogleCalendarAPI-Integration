@@ -77,7 +77,7 @@ Route::get('/auth/callback', function () {
             //if token is expired
             if(Helpers::isTokenExpired($expiryAt))
             {
-                $userRefreshToken = Helpers::getUserRefreshToken(Auth::id());
+                $userRefreshToken = Helpers::getUserRefreshToken(Auth:: id());
                 $newAccessToken = Helpers::generateAccessToken($userRefreshToken);
                 $newExpiryAt = Carbon::now(new DateTimeZone('Asia/Kolkata'))->addHour(1)->toDateTimeString();
                 Helpers::storeNewAccessToken(Auth::id(), $newExpiryAt, $newAccessToken);
@@ -110,3 +110,6 @@ Route::resource('calendar', CalendarController::class)->middleware('auth');
 Route::resource('event', EventController::class)->middleware('auth');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('test', function(){
+//     dd(Helpers::getAllEvents(Helpers::getUserAccessToken('anuragsingh22324@gmail.com'), "anuragsingh22324@gmail.com"));
+// });

@@ -1,0 +1,103 @@
+warning: LF will be replaced by CRLF in resources/views/layouts/app.blade.php.
+The file will have its original line endings in your working directory
+warning: LF will be replaced by CRLF in routes/web.php.
+The file will have its original line endings in your working directory
+[1mdiff --git a/app/Helper/Helpers.php b/app/Helper/Helpers.php[m
+[1mindex 9301191..47c4875 100644[m
+[1m--- a/app/Helper/Helpers.php[m
+[1m+++ b/app/Helper/Helpers.php[m
+[36m@@ -36,7 +36,7 @@[m [mpublic static function getUserAccessToken($userId)[m
+     {   [m
+         $accessToken = DB::table('google_users')[m
+                             ->select('access_token')[m
+[31m-                            ->where('user_id', $userId)[m
+[32m+[m[32m                            ->where('email', $userId)[m
+                             ->value('access_token');[m
+         return $accessToken;[m
+     }[m
+[36m@@ -137,7 +137,7 @@[m [mpublic static function getAllEvents($access_token, $calendar_id)[m
+         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '. $access_token));	[m
+         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);	[m
+         $data = json_decode(curl_exec($ch), true);[m
+[31m-        //dd($data);[m
+[32m+[m[32m        dd($data);[m
+         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		[m
+         if($http_code != 200) [m
+             throw new Exception('Error : Failed to get events list');[m
+[1mdiff --git a/resources/views/event/create.blade.php b/resources/views/event/create.blade.php[m
+[1mindex 6a1d67c..d327b26 100644[m
+[1m--- a/resources/views/event/create.blade.php[m
+[1m+++ b/resources/views/event/create.blade.php[m
+[36m@@ -1,4 +1,40 @@[m
+ @extends('layouts.app')[m
+[32m+[m[32m<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>[m
+[32m+[m[32m<style>[m
+[32m+[m[32m    select {[m
+[32m+[m[32m        width: 400px;[m
+[32m+[m[32m        height: 30px;[m
+[32m+[m[32m    }[m
+[32m+[m[41m    [m
+[32m+[m[32m</style>[m
+[32m+[m[32m<script>[m
+[32m+[m[32m    function recurringCheck() {[m
+[32m+[m[32m      var checkBox = document.getElementById("recurringCheck");[m
+[32m+[m[32m      var text = document.getElementById("text");[m
+[32m+[m[32m      if (checkBox.checked == true){[m
+[32m+[m[32m        text.style.display = "block";[m
+[32m+[m[32m      } else {[m
+[32m+[m[32m         text.style.display = "none";[m
+[32m+[m[32m      }[m
+[32m+[m[32m    }[m
+[32m+[m[32m    $(function () {[m
+[32m+[m[32m    $('select[name="RecurringOptions"]').hide();[m
+[32m+[m
+[32m+[m[32m    $('input[name="recurringCheck"]').on('click', function () {[m
+[32m+[m[32m        if ($(this).prop('checked')) {[m
+[32m+[m[32m            $('select[name="RecurringOptions"]').fadeIn();[m
+[32m+[m[32m        } else {[m
+[32m+[m[32m            $('select[name="RecurringOptions"]').hide();[m
+[32m+[m[32m        }[m
+[32m+[m[32m    });[m
+[32m+[m[32m});[m
+[32m+[m[32m    $(document).ready(function(){[m
+[32m+[m[32m  $("p").click(function(){[m
+[32m+[m[32m    $(this).hide();[m
+[32m+[m[32m  });[m
+[32m+[m[32m});[m
+[32m+[m[32m    </script>[m
+[32m+[m[41m    [m
+ @section('content')[m
+ <form action="{{ route('event.store') }}" method="POST" class="form-group" style="width: 75%; margin: auto">[m
+     @csrf[m
+[36m@@ -18,6 +54,19 @@[m
+         <tr>[m
+             <td><label for="eventend">Event End:</label></td>[m
+             <td><input type="datetime-local" class="form-control" style="background: white ; border: solid 1px"" value="data and time" id="eventend" name="eventend"></td>[m
+[32m+[m[32m        </tr>[m
+[32m+[m[32m        <tr>[m
+[32m+[m[32m            <td><label for="recurringCheck">Recurring Event:</label></td>[m
+[32m+[m[32m            <td><input type="checkbox" id="recurringCheck" name="recurringCheck" onclick="recurringCheck()" style="height: 20px ; width: 20px; border: solid 1px ; border-radius: 3px"><br><br>[m
+[32m+[m[32m                <select name="RecurringOptions" >[m
+[32m+[m[32m                    <option value="1">Daily</option>[m
+[32m+[m[32m                    <option value="2">Every WeekDay(Monday to Friday)</option>[m
+[32m+[m[32m                    <option value="3">Custom</option>[m
+[32m+[m[32m                  </select>[m
+[32m+[m[32m            </td>[m
+[32m+[m[41m            [m
+[32m+[m[41m                [m
+[32m+[m[41m            [m
+         </tr>[m
+         <tr>[m
+             <td><label for="eventlocation">Location:</label></td>[m
+[1mdiff --git a/routes/web.php b/routes/web.php[m
+[1mindex cd1595d..10e1480 100644[m
+[1m--- a/routes/web.php[m
+[1m+++ b/routes/web.php[m
+[36m@@ -110,3 +110,6 @@[m
+ Route::resource('event', EventController::class)->middleware('auth');[m
+ [m
+ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');[m
+[32m+[m[32m// Route::get('test', function(){[m
+[32m+[m[32m//     dd(Helpers::getAllEvents(Helpers::getUserAccessToken('anuragsingh22324@gmail.com'), "anuragsingh22324@gmail.com"));[m
+[32m+[m[32m// });[m
+\ No newline at end of file[m

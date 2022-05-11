@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Nette\Utils\Json;
 use phpDocumentor\Reflection\PseudoTypes\True_;
 
+use function PHPUnit\Framework\isNull;
 
 class Helpers {
 
@@ -104,7 +105,7 @@ class Helpers {
     {
         $url_parameters = array();
 
-        $url_parameters['fields'] = 'items(id,summary,timeZone,accessRole)';
+        $url_parameters['fields'] = 'items(id,summary,description,accessRole,timeZone,primary)';
         $url_parameters['minAccessRole'] = 'owner';
 
         $url_calendars = 'https://www.googleapis.com/calendar/v3/users/me/calendarList?'. http_build_query($url_parameters);
@@ -115,12 +116,12 @@ class Helpers {
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '. $access_token));	
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);	
         $data = json_decode(curl_exec($ch), true);
-        dd($data);
+        //dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to get calendars list');
-
-        dd($data['items']);   
+        return $data;
+        //dd($data['items']);   
     }
 
     public static function getAllEvents($access_token, $calendar_id)
@@ -159,9 +160,8 @@ class Helpers {
         //dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
-            throw new Exception('Error : Failed to create calendar');
-        dd($data); 
-    }    
+            throw new Exception('Error : Failed to create calendar');    
+}
 
     public static function insertNewEvent($access_token, $summary, $description, $eventStart = NULL,
                                $eventEnd, $location = NULL, $attendees = NULL, $meetinglink = NULL)
@@ -219,7 +219,7 @@ class Helpers {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curlPost));
         //curl_exec($ch);
         $data = json_decode(curl_exec($ch), true, JSON_PRETTY_PRINT);
-        dd($data);
+        //dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to create event');
@@ -283,5 +283,38 @@ class Helpers {
                 ],['event_id'], ['title', 'description', 'status', 'location', 'event_start', 'event_end', 'attendees_emails', 'meeting_link']);
             }
         }    
+
+        if(isNull($calendar_id))
+        {
+            $calendars = Helpers::GetCalendarsList($accessToken);
+            //dd($calendars);
+            $columns = array('calendar_id', 'title', 'description', 'access_role', 'timezone', 'primary');
+            $calendarData = array();
+            $caledarData = array_fill_keys($columns, "");
+            foreach ($calendars['items'] as $calendar)
+            {
+                $calendarData['calendar_id'] = ($calendar['id'] ?? null);//if field does not exist in json response field, set it to null
+                $calendarData['title'] = ($calendar['summary'] ?? null);
+                $calendarData['description'] = ($calendar['description'] ?? null);
+                $calendarData['access_role'] = ($calendar['accessRole'] ?? null);
+                $calendarData['timezone'] = ($calendar['timeZone'] ?? null);
+                $calendarData['primary'] = ($calendar['primary'] ?? false);
+                
+               //dump($calendarData);
+                //event_id should be unique in the events table
+                DB::table('calendars')->upsert([
+                    'id' => Str::uuid()->toString(),
+                    'user_id' => Auth::id(),
+                    'calendar_id' => $calendarData['calendar_id'],
+                    'title' => $calendarData['title'],
+                    'description' => $calendarData['description'],
+                    'access_role' => $calendarData['access_role'],
+                    'timezone' => $calendarData['timezone'],
+                    'primary' => $calendarData['primary'],
+                ],['calendar_id'], ['title', 'description', 'access_role', 'timezone', 'primary']);
+            }
+        }
     }
+
+    
 }
