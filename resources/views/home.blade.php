@@ -60,10 +60,10 @@
       // THIS KEY WON'T WORK IN PRODUCTION!!!
       // To make your own Google API key, follow the directions here:
       // http://fullcalendar.io/docs/google_calendar/
-      googleCalendarApiKey: 'AIzaSyAsyBUnf6Glvss3v0ZyWMEAaoE7Sno53JI',
+      googleCalendarApiKey: 'key here',
 
-      // US Holidays
-      events: 'anuragsingh22324@gmail.com',
+     
+      events: 'calendar I'd here',
 
       eventClick: function(arg) {
 
