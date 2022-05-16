@@ -1,14 +1,14 @@
 @extends('layouts.app')
-@php
+{{-- @php
     use App\Helper\Helpers;
-@endphp
+@endphp --}}
 @section('content')
 {{-- @php
     Helpers::refreshDatabase(session('token'));
 @endphp --}}
-    {{-- <a href="{{ route('calendar.create') }}">Create new calendar</a> --}}
-    <div class="container" style="font-family:sans-serif">
-        <a href="{{ route('calendar.create') }}" class="blade-link" >Add new calendar</a><br><br>
+    
+    <div class="container" style="font-family:sans-serif; margin-top: 90px">
+        <a style="margin-top: 60px;" href="{{ route('calendar.create') }}">Create new calendar</a>
         <div class="row justify-content-center">
             <div class="card" style="border: none">
                     {{-- <div >

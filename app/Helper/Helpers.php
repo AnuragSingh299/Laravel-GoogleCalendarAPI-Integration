@@ -21,9 +21,38 @@ use function PHPUnit\Framework\isNull;
 
 class Helpers {
 
-    public static function createGoogleUser()
+    public static function updateAccessToken()
     {
+        $expiryAt = Helpers::getUserAccessTokenExpiry(Auth::id());
+            //if token is expired
+            if(Helpers::isTokenExpired($expiryAt))
+            {
+                $userRefreshToken = Helpers::getUserRefreshToken(Auth:: id());
+                $newAccessToken = Helpers::generateAccessToken($userRefreshToken);
+                $newExpiryAt = Carbon::now(new DateTimeZone('Asia/Kolkata'))->addHour(1)->toDateTimeString();
+                Helpers::storeNewAccessToken(Auth::id(), $newExpiryAt, $newAccessToken);
+                //Helpers::getAllEvents($newAccessToken, "anuragsingh22324@gmail.com");
+                //Helpers::refreshDatabase($newAccessToken, "anuragsingh22324@gmail.com");
+                //Helpers::createNewCalendar($newAccessToken, "skggjldg", "sdfsdafsdf");
+                //session(['token' => $newAccessToken]);
+                //return redirect()->back();
+                return $newAccessToken;
+            }
+            else
+            {
+                $oldAccessToken = Helpers::getUserAccessToken(Auth::id());    
+                //Helpers::getAllEvents($oldAccessToken, "anuragsingh22324@gmail.com");//controller here  
+                //Helpers::refreshDatabase($oldAccessToken, "anuragsingh22324@gmail.com");
+                //Helpers::createNewCalendar($oldAccessToken, "skggjldg", "sdfsdafsdf");   
+                //session(['token' => $oldAccessToken]);
+                //return redirect()->back();   
+                return $oldAccessToken;
+            }
+    }
 
+    public static function modifyEventEnd($eventStart)
+    {
+        
     }
 
     public static function storeNewAccessToken($userId, $newExpiryAt, $newAccesToken)
@@ -101,8 +130,9 @@ class Helpers {
             return false;
     }
 
-    public static function GetCalendarsList($access_token) 
+    public static function GetCalendarsList() 
     {
+        $access_token = Helpers::updateAccessToken();
         $url_parameters = array();
 
         $url_parameters['fields'] = 'items(id,summary,description,accessRole,timeZone,primary)';
@@ -114,6 +144,7 @@ class Helpers {
         curl_setopt($ch, CURLOPT_URL, $url_calendars);		
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '. $access_token));	
+        //dd(session('token'));
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);	
         $data = json_decode(curl_exec($ch), true);
         //dd($data);
@@ -124,8 +155,9 @@ class Helpers {
         //dd($data['items']);   
     }
 
-    public static function getAllEvents($access_token, $calendar_id)
+    public static function getAllEvents($calendar_id)
     {
+        $access_token = Helpers::updateAccessToken();
         $url_parameters = array();
 
         $url_parameters['fields'] = 'items(id,summary,description, start, end, status, location, attendees, hangoutLink)';
@@ -145,8 +177,9 @@ class Helpers {
         return $data;
     }
 
-    public static function createNewCalendar($access_token, $summary, $description)
+    public static function createNewCalendar($summary, $description)
     {
+        $access_token = Helpers::updateAccessToken();
         $url_new_calendar = 'https://www.googleapis.com/calendar/v3/calendars/';
         $curlPost = array("summary" => $summary, "description" => $description);
         $ch = curl_init();		
@@ -161,56 +194,79 @@ class Helpers {
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to create calendar');    
+        Helpers::refreshDatabase();
 }
 
-    public static function insertNewEvent($access_token, $summary, $description, $eventStart = NULL,
-                               $eventEnd, $location = NULL, $attendees = NULL, $meetinglink = NULL)
+    // public static function insertNewEvent($access_token, $summary, $description, $eventStart = NULL,
+    //                            $eventEnd, $location = NULL, $attendees = NULL, $meetinglink = NULL, $isRecurring = NULL, $recurrenceRule = NULL)
+    // {
+    //     dd($isRecurring);
+    //     $url_new_event = "";
+    //     $curlPost = "";
+    //     //$attendeesArray = array();
+    //     $emailNew = [];
+    //     if($meetinglink == "yes")
+    //     {
+    //         $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=1&sendUpdates=all';
+    //         if(strpos($attendees, ',') !== false)
+    //         {
+    //             $emails = explode(",", $attendees);
+    //             foreach ($emails as $key => $emailId) 
+    //             {
+    //                 $emailNew[] = ['email'=> $emailId];            
+    //             }
+    //             $curlPost = array(
+    //                 "summary" => $summary, "description" => $description, "start" => $eventStart,
+    //                 "end" => $eventEnd, "location" => $location,
+    //                 "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
+    //                 "attendees" => $emailNew ,
+    //                 "recurring" => $recurrenceRule
+    //             );
+    //             //dd($curlPost);
+    //             //dd(json_encode($curlPost, true, JSON_PRETTY_PRINT));
+    //         }
+    //         else
+    //         {
+    //             $curlPost = array(
+    //                 "summary" => $summary, "description" => $description, "start" => $eventStart,
+    //                 "end" => $eventEnd, "location" => $location,
+    //                 "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
+    //                 "attendees" => array(array('email' => $attendees))  
+    //             );
+    //             //dd($curlPost);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=0';
+    //         $curlPost = array(
+    //             "summary" => $summary, "description" => $description, "start" => $eventStart,
+    //             "end" => $eventEnd, "location" => $location
+    //         );
+    //     }
+    //     //dd($url_new_event);
+    //     //dd($curlPost);
+    //     $ch = curl_init();		
+    //     curl_setopt($ch, CURLOPT_URL, $url_new_event);		
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	
+    //     curl_setopt($ch, CURLOPT_POST, 1);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '. $access_token, 'Content-Type: application/json'));	
+    //     //dd(json_encode($curlPost));
+    //     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curlPost));
+    //     //curl_exec($ch);
+    //     $data = json_decode(curl_exec($ch), true, JSON_PRETTY_PRINT);
+    //     dd($data);
+    //     $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
+    //     if($http_code != 200) 
+    //         throw new Exception('Error : Failed to create event');
+    // }
+    
+    public static function insertNewEvent($curlPost, $newEventUrl)
     {
-        $url_new_event = "";
-        $curlPost = "";
-        //$attendeesArray = array();
-        $emailNew = [];
-        if($meetinglink == "yes")
-        {
-            $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=1&sendUpdates=all';
-            if(strpos($attendees, ',') !== false)
-            {
-                $emails = explode(",", $attendees);
-                
-                foreach ($emails as $key => $emailId) 
-                {
-                    $emailNew[] = ['email'=> $emailId] ;            
-                }
-                $curlPost = array(
-                    "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
-                    "end" => array('dateTime' => $eventEnd), "location" => $location,
-                    "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
-                    "attendees" => $emailNew  
-                );
-                //dd(json_encode($curlPost, true, JSON_PRETTY_PRINT));
-            }
-            else
-            {
-                $curlPost = array(
-                    "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
-                    "end" => array('dateTime' => $eventEnd), "location" => $location,
-                    "conferenceData" => array('createRequest' => array('conferenceSolutionKey' => array('type' => 'hangoutsMeet'), 'requestId' => uniqid())),
-                    "attendees" => array(array('email' => $attendees))  
-                );
-            }
-        }
-        else
-        {
-            $url_new_event = 'https://www.googleapis.com/calendar/v3/calendars/'. Auth::user()->email .'/events?conferenceDataVersion=0';
-            $curlPost = array(
-                "summary" => $summary, "description" => $description, "start" => array('dateTime' => $eventStart),
-                "end" => array('dateTime' => $eventEnd), "location" => $location
-            );
-        }
-        //dd($url_new_event);
-        //dd($curlPost);
+        $access_token = Helpers::updateAccessToken();
         $ch = curl_init();		
-        curl_setopt($ch, CURLOPT_URL, $url_new_event);		
+        curl_setopt($ch, CURLOPT_URL, $newEventUrl);		
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
@@ -218,18 +274,19 @@ class Helpers {
         //dd(json_encode($curlPost));
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($curlPost));
         //curl_exec($ch);
-        $data = json_decode(curl_exec($ch), true, JSON_PRETTY_PRINT);
+        $data = json_decode(curl_exec($ch), true);
         //dd($data);
         $http_code = curl_getinfo($ch,CURLINFO_HTTP_CODE);		
         if($http_code != 200) 
             throw new Exception('Error : Failed to create event');
-    } 
+        Helpers::refreshDatabase(Auth::user()->email);
+    }
 
-    public static function refreshDatabase($accessToken, $calendar_id = NULL)
+    public static function refreshDatabase($calendar_id = NULL)
     {
         if($calendar_id != NULL)
         {
-            $events = Helpers::getAllEvents($accessToken, $calendar_id);
+            $events = Helpers::getAllEvents($calendar_id);
             //dd($events);
             $columns = array('event_start', 'event_end', 'attendees_emails', 'meeting_link');
             $eventData = array();
@@ -286,7 +343,7 @@ class Helpers {
 
         if(isNull($calendar_id))
         {
-            $calendars = Helpers::GetCalendarsList($accessToken);
+            $calendars = Helpers::GetCalendarsList();
             //dd($calendars);
             $columns = array('calendar_id', 'title', 'description', 'access_role', 'timezone', 'primary');
             $calendarData = array();

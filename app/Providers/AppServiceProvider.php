@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Helper\Helpers;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        //Helpers::refreshDatabase(session('token', Auth::user()->email));
+        
     }
 }

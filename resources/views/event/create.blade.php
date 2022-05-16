@@ -1,19 +1,51 @@
 @extends('layouts.app')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <style>
-    select {
+    /* select {
         width: 400px;
         height: 30px;
+    } */
+    /* body {
+        background: #EFEFBB;  
     }
+    input {
+        border: 2px solid white;
+        border-radius: 2px;
+    }
+    input[type='checkbox'] {
+        border: 2px solid white;
+        border-radius: 2px;
+        height: 20px;
+        width: 40px;
+    }
+    label {
+        color: rgb(11, 23, 63);
+        text-shadow: ;
+        margin-bottom: 10px;
+    }
+    input[type=text]:focus, textarea:focus {
+        box-shadow: 0 0 9px white;
+        font-size: 15px;
+        font-weight: bold;
+        border: 2px solid black;
+    }
+    .form-back {
+        border: 2px solid black;
+        border-radius: 4px;
+        box-shadow: 20px;
+        padding: 50px 50px 50px 50px;
+    } */
 </style>
 <script>
-    
-
     $(function () {
     $('input[name="alldaydate"]').hide();
-    $('label[for="alldayevent"]').hide();
+    
     $('label[for="event"]').hide();
     $('select[name="RecurringOptions"]').hide();
+    $('label[for="alldaystartdate"]').hide();
+    $('label[for="alldayenddate"]').hide();
+    $('input[name="alldaystartdate"]').hide();
+    $('input[name="alldayenddate"]').hide();
     $('input[name="recurringCheck"]').on('click', function () {
         if ($(this).prop('checked')) {
             $('select[name="RecurringOptions"]').fadeIn();
@@ -23,146 +55,110 @@
     });
     $('input[name="allday"]').on('click', function () {
         if ($(this).prop('checked')) {
-            $('input[name="alldaydate"]').fadeIn();
+            $('input[name="alldaystartdate"]').fadeIn();
             $('label[for="alldayevent"]').fadeIn();
+            $('label[for="alldaystartdate"]').fadeIn();
+            $('label[for="alldayenddate"]').fadeIn();
+            $('input[name="alldaystartdate"]').fadeIn();
+            $('input[name="alldayenddate"]').fadeIn();
             $('input[name="eventstart"]').hide();
             $('input[name="eventend"]').hide();
+            $('label[for="eventend"]').hide();
+            $('label[for="eventstart"]').hide();
         } else {
-            $('input[name="alldaydate"]').hide();
+            
             $('input[name="eventstart"]').show();
             $('input[name="eventend"]').show();
             $('label[for="alldayevent"]').show();
             $('label[for="alldayevent"]').show();
+            $('label[for="alldaystartdate"]').hide();
+            $('label[for="alldayenddate"]').hide();
+            $('label[for="eventend"]').show();
+            $('label[for="eventstart"]').show();
+            $('input[name="alldaystartdate"]').hide();
+            $('input[name="alldayenddate"]').hide();
         }
     });
+    
 });
 
 </script>
     
 @section('content')
-<form action="{{ route('event.store') }}" method="POST" class="form-group" style="width: 75%; margin: auto">
+<form action="{{ route('event.store') }}" method="POST" class="form-group" style="width: 50%; ">
     @csrf
-    <table class="table table-borderless" style="font-size: 15px ; background: white ; color: black ; border:none ">
-        <tr>
-            <td><label for="eventname">Event name:</label><br></td>
-        </tr>
-        <tr>
-            <td><input class="form-control" style="background: white ; border: solid 1px" type="text" id="eventname" name="eventname" required><br></td>
-        </tr>
-        <tr>
-            <td><label for="eventdesc">Event description:</label><br></td>
-        </tr>
+        <div class="form-back">
+            <div>
+                <label for="eventname">Event name:</label><br>
+                <input class="form-control" type="text" id="eventname" name="eventname" required>
+            </div>
+            
+            <div>
+                <label for="eventdesc">Event description:</label><br></td>
+                <textarea name="eventdesc" class="form-control"  id="" cols="20" rows="5"></textarea>
+            </div>
+           
+            <div>
+                <label for="alldayevent">All day:</label>
+                <input type="checkbox" id="allday" name="allday" value="yes"  >
+            </div>
+            
+            <div>
+                <label for="alldaystartdate">Start Date:</label>
+                <input type="date" name="alldaystartdate" id="alldaystartdate">
+            </div>
+
+            <div>
+                <label for="alldayenddate">End Date:</label>
+                <input type="date" name="alldayenddate" id="alldayenddate">
+            </div>
+            
+            <div>
+                <label for="eventstart">Event Start:</label>
+                <input type="datetime-local" class="form-control"  value="data and time" id="eventstart" name="eventstart">
+            </div>
+            
+            <div>
+                <label for="eventend">Event End:</label>
+                <input type="datetime-local" class="form-control"  value="data and time" id="eventend" name="eventend">
+            </div>
         
-        <tr>
-            <td><textarea name="eventdesc" class="form-control" style="background: white ; border: solid 1px"" id="" cols="20" rows="5"></textarea></td>
-        </tr>
-        <tr>
-            <td><label for="alldayevent">All day:</label>
-                <input type="checkbox" id="allday" name="allday" onclick="alldaycheck()" style="height: 20px ; width: 20px; border: solid 1px ; border-radius: 3px">
-            </td>
-            <td><label for="alldayevent">Select Date:</label>
-                <input type="date" name="alldaydate" id="alldaydate">
-            </td>
-        </tr>
-        <tr>
-            <td> <label for="eventstart">Event Start:</label></td>
-        </tr>
-        <tr>
-            <td><input type="datetime-local" class="form-control" style="background: white ; border: solid 1px"" value="data and time" id="eventstart" name="eventstart"></td>
-        </tr>
-        <tr>
-            <td><label for="eventend">Event End:</label></td>
-        </tr>
-        <tr>
-            <td><input type="datetime-local" class="form-control" style="background: white ; border: solid 1px"" value="data and time" id="eventend" name="eventend"></td>
-        </tr>
-        <tr>
-            <td><label for="recurringCheck">Recurring Event:</label>
-                <input type="checkbox" id="recurringCheck" name="recurringCheck" onclick="recurringCheck()" style="height: 20px ; width: 20px; border: solid 1px ; border-radius: 3px">
-            </td>
-            <td><select name="RecurringOptions" >
-                <option value="1">Daily</option>
-                <option value="2">Every WeekDay(Monday to Friday)</option>
-                <option value="3">Custom</option>
-              </select>    
-            </td>
-        </tr>
-        
-        <tr>
-            <td><label for="eventlocation">Location:</label></td>
-        </tr>
-        <tr>
-            <td><input type="text" class="form-control" style="background: white ; border: solid 1px"" id="eventlocation" name="eventlocation">
-            </td>
-        </tr>
-        <tr>
-            <td><label for="eventattendee">Add guest Email:<sup>*Separate by commas</sup></label></td>
-            <td><input type="text" name="eventattendee" class="form-control" style="background: white ; border: solid 1px"" id="eventattendee"></td>
-        </tr>
-        <tr>
-            <td>
-                Generate Google Meet Link
-            </td>
-            <td>
+            <div>
+                <label for="recurringCheck">Recurring Event:</label>
+                <input type="checkbox" id="recurringCheck" name="recurringCheck" value="yes" onclick="recurringCheck()" >
+            </div>
+            
+            <div>
+                <select name="RecurringOptions">
+                    <option value="daily">Daily</option>
+                    <option value="weekday">Every WeekDay(Monday to Friday)</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+                
+            <div>
+                <label for="eventlocation">Location:</label>
+                <input type="text" class="form-control"  id="eventlocation" name="eventlocation">    
+            </div>
+            
+            <div>
+                <label for="eventattendee">Add guest Email:</label>
+                <input type="text" name="eventattendee" class="form-control"  id="eventattendee">    
+            </div>
+            
+            <div>
+                <label>Google Meet Link:</label><br>
                 <input type="radio" id="yes" name="meetinglink" value="yes">
                 <label for="yes">Yes</label>
-            
                 <input type="radio" id="no" name="meetinglink" value="no" checked>
                 <label for="no">No</label>
-            </td>
-        </tr>
-        <tr>
-            <td><input type="submit"  name="submit"></td>
-            <td><a href="{{ route('event.index') }}">Back</a></td>
-        </tr>
-    </table>   
+            </div>
+                
+            <div>
+                <input class="btn btn-primary" type="submit"  name="submit">
+                <a href="{{ route('event.index') }}"  class="btn btn-primary">Back</a>
+            </div>
+        </div>
+            
 </form>
 @endsection
-{{-- @extends('layouts.app')
-@section('content')
-<form action="{{ route('event.store') }}" method="POST" class="form-group" style="width: 75%; margin: auto">
-    @csrf
-    <table class="table" style="font-size: 15px ; background: white ; color: black ; border:none ">
-        <tr>
-            <td><label for="eventname">Event name:</label><br></td>
-            <td><input class="form-control" style="background: white ; border: solid 1px" type="text" id="eventname" name="eventname" required><br></td>
-        </tr>
-        <tr>
-            <td><label for="eventdesc">Event description:</label><br></td>
-            <td><textarea name="eventdesc" class="form-control" style="background: white ; border: solid 1px"" id="" cols="20" rows="5"></textarea></td>
-        </tr>
-        <tr>
-            <td> <label for="eventstart">Event Start:</label></td>
-            <td><input type="datetime-local" class="form-control" style="background: white ; border: solid 1px"" value="data and time" id="eventstart" name="eventstart"></td>
-        </tr>
-        <tr>
-            <td><label for="eventend">Event End:</label></td>
-            <td><input type="datetime-local" class="form-control" style="background: white ; border: solid 1px"" value="data and time" id="eventend" name="eventend"></td>
-        </tr>
-        <tr>
-            <td><label for="eventlocation">Location:</label></td>
-            <td><input type="text" class="form-control" style="background: white ; border: solid 1px"" id="eventlocation" name="eventlocation"></td>
-        </tr>
-        <tr>
-            <td><label for="eventattendee">Add guest Email:<sup>*Separate by commas</sup></label></td>
-            <td><input type="text" name="eventattendee" class="form-control" style="background: white ; border: solid 1px"" id="eventattendee"></td>
-        </tr>
-        <tr>
-            <td>
-                Generate Google Meet Link
-            </td>
-            <td>
-                <input type="radio" id="yes" name="meetinglink" value="yes">
-                <label for="yes">Yes</label>
-            
-                <input type="radio" id="no" name="meetinglink" value="no" checked>
-                <label for="no">No</label>
-            </td>
-        </tr>
-        <tr>
-            <td><input type="submit"  name="submit"></td>
-            <td><a href="{{ route('event.index') }}">Back</a></td>
-        </tr>
-    </table>   
-</form>
-@endsection --}}

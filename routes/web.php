@@ -106,10 +106,20 @@ Route::get('/auth/callback', function () {
 
 Auth::routes(['register' => false]);
 
+//Route::get('event/search', 'EventController@search');
 Route::resource('calendar', CalendarController::class)->middleware('auth');
 Route::resource('event', EventController::class)->middleware('auth');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-// Route::get('test', function(){
-//     dd(Helpers::getAllEvents(Helpers::getUserAccessToken('anuragsingh22324@gmail.com'), "anuragsingh22324@gmail.com"));
-// });
+
+Route::get('calendars', function(){
+    //$token = Helpers::updateAccessToken();
+    Helpers::refreshDatabase();
+    return redirect()->route('calendar.index');
+})->name('syncCalendar');
+
+Route::get('events', function(){
+    //$token = Helpers::updateAccessToken();
+    Helpers::refreshDatabase(Auth::user()->email);
+    return redirect()->route('event.index');
+})->name('syncEvent');

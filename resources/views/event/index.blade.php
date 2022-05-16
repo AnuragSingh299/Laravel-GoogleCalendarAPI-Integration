@@ -1,8 +1,16 @@
 @extends('layouts.app')
 
+<script>
+
+</script>
+
 @section('content')
 
-<div class="container" style="font-family:sans-serif">
+<!-- Search form -->
+<input class="form-control" type="text" placeholder="Search" aria-label="Search">
+
+
+<div class="container" style="font-family:sans-serif; margin-top: 50px">
     <a href="{{ route('event.create') }}" class="blade-link" >Add new Event</a><br><br>
     <div class="row justify-content-center">
         <div class="card" style="border: none">

@@ -13,16 +13,18 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-
+    {{-- <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet"> --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100&display=swap" rel="stylesheet">
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <style>
-        body {
+        /* body {
             background: white;
-        }
-        table.home-events-table th{
+        } */
+        /* table.home-events-table th{
             border: none;
         }
         a:hover.blade-link {
@@ -52,6 +54,22 @@
         td {
             font-weight: bold;
         }
+        form {
+            margin-top: 50px;
+            margin-left: 50px;
+            font-family: Google Sans,Roboto,Arial,sans-serif;
+            font-size: 15px;
+            font-weight: bold
+        }
+
+        form div {
+            margin-bottom: 20px;
+        }
+
+        .navbar {
+            position: fixed;
+            width: 100%;
+        } */
     </style>
 </head>
 <body>
@@ -60,9 +78,9 @@
             <div class="container">
                 @if (Auth::check())
                     <a href="{{ route('home') }}"  class="nav-link">Home</a>
-                    <a href="{{ route('calendar.index') }}"  class="nav-link">Calendars</a>
-                    <a href="{{ route('event.index') }}"  class="nav-link">Events</a>    
-                    <a href="auth/redirect/calendar"><img src="https://logos-world.net/wp-content/uploads/2021/03/Google-Calendar-Logo-700x394.png" style="width:40px;height:20px" alt="Sync Google Calendar" title="Sync Google Calendar"></a>
+                    <a href="{{ route('syncCalendar') }}"  class="nav-link">Calendars</a>
+                    <a href="{{ route('syncEvent') }}"  class="nav-link">Events</a>    
+                    {{-- <a href="auth/redirect/calendar"><img src="https://logos-world.net/wp-content/uploads/2021/03/Google-Calendar-Logo-700x394.png" style="width:40px;height:20px" alt="Sync Google Calendar" title="Sync Google Calendar"></a> --}}
                 @else
                     <a class="navbar-brand" href="{{ url('/') }}">
                         {{ config('app.name', 'Calendar') }}

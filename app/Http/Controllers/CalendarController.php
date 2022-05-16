@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class CalendarController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -38,7 +39,7 @@ class CalendarController extends Controller
      */
     public function store(Request $request)
     {
-        Helpers::createNewCalendar(session('token'), $request->input('calendarname'), $request->input('calendardesc'));
+        Helpers::createNewCalendar($request->input('calendarname'), $request->input('calendardesc'));
         return redirect()->route('calendar.index');
     }
 
