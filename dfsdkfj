@@ -1,0 +1,90 @@
+[33mcommit b9591c4253c3e67d7c95dcf727400eadf913f833[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Merge: 5aeb69c 81b2185
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Mon May 16 14:26:23 2022 +0530
+
+    clear home
+
+[33mcommit 5aeb69c7e96335384ab37f136d1d0ac1f35e8e94[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Mon May 16 14:17:07 2022 +0530
+
+    reset home
+
+[33mcommit e737546f6973abe0a00b6679dcf0a962acf620f4[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Mon May 16 14:06:11 2022 +0530
+
+    automate sync
+
+[33mcommit 81b218539b8ec8ab0c2207f9853ab9b475d55799[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: AnuragSingh299 <90097468+AnuragSingh299@users.noreply.github.com>
+Date:   Sun May 15 12:02:59 2022 +0530
+
+    hide key
+
+[33mcommit 49039cb06647c6ec6f791e99a65243f7498fe202[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Wed May 11 10:53:13 2022 +0530
+
+    add calendar
+
+[33mcommit 0d62f7f1e46fbaefd3cff272646b2698a0a7f103[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Tue May 3 09:52:35 2022 +0530
+
+    add multiple emails
+
+[33mcommit cda73ef37f7a976227d778a5019cc9bd2603cac0[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Wed Apr 27 13:46:56 2022 +0530
+
+    time zone input
+
+[33mcommit 0aa6a2bd6ea4d6ef7b847d0d160a936b35be66e7[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Tue Apr 26 17:00:51 2022 +0530
+
+    attendees and meeting link
+
+[33mcommit 04604d0581baba932f9d7785ee9040fde0d11cc2[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Mon Apr 25 18:24:56 2022 +0530
+
+    event read and create
+
+[33mcommit a30f287a415ed8c236756ed21fbfc6ba86b16d89[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Fri Apr 22 14:57:03 2022 +0530
+
+    manage access token
+
+[33mcommit d249ad8882813fea47ba9458970a0e15d21b95f5[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Thu Apr 21 16:00:12 2022 +0530
+
+    scopes
+
+[33mcommit 0ead5c954c6f930d783784cedd046f375b905c44[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Tue Apr 19 10:51:45 2022 +0530
+
+    check user exists
+
+[33mcommit c626d05fb16650b1a6f78b5bd2bc0745bc10b3db[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Mon Apr 18 22:47:34 2022 +0530
+
+    socialite test
+
+[33mcommit 87afc92b2e65fb00b10d94aeca7945696b6310d0[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Mon Apr 18 16:32:37 2022 +0530
+
+    auth scaffolding
+
+[33mcommit 9ced5855a28e4934e6689960b90028b9652f2b0f[m
+Author: Anurag Singh <19anuragsingh98@gmail.com>
+Date:   Mon Apr 18 14:32:28 2022 +0530
+
+    helper api functions
